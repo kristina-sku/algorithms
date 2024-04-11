@@ -1,6 +1,7 @@
+import java.util.Arrays;
 import java.util.Comparator;
 
-public class Baseline implements Comparator, Comparable {
+public class Baseline implements Comparator<Object>, Comparable<Object> {
 
     //quicksort
     public static <T extends Comparable<? super T>> void quicksort(final T[] array, final Comparator<T> comparator) {
@@ -12,9 +13,9 @@ public class Baseline implements Comparator, Comparable {
 
     private static <T extends Comparable<? super T>> void _quicksort(final T[] array, int low, int high, final Comparator<T> comparator) {
         if (low < high) {
-            int pivotIndex = partition(array, low, high,  comparator);
+            int pivotIndex = partition(array, low, high, comparator);
             _quicksort(array, low, pivotIndex - 1, comparator);
-            _quicksort(array, pivotIndex + 1, high,  comparator);
+            _quicksort(array, pivotIndex + 1, high, comparator);
         }
     }
 
@@ -41,13 +42,8 @@ public class Baseline implements Comparator, Comparable {
         array[j] = temp;
     }
 
-
-
-
-    //2-way merge sort
-
-    public static <T extends Comparable<? super T>> void mergesort(final T[] array,
-                                                                   final Comparator<T>) {
+    // 2-way merge sort
+    public static <T extends Comparable<? super T>> void mergesort(final T[] array, final Comparator<T> comparator) {
         int length = array.length;
         if (length < 2) {
             return;
@@ -56,8 +52,8 @@ public class Baseline implements Comparator, Comparable {
         final T[] left = Arrays.copyOfRange(array, 0, array.length / 2);
         final T[] right = Arrays.copyOfRange(array, array.length / 2, array.length);
 
-        mergeSort(left, comparator);
-        mergeSort(right, comparator);
+        mergesort(left, comparator);
+        mergesort(right, comparator);
 
         int leftIndex = 0;
         int rightIndex = 0;
@@ -70,34 +66,32 @@ public class Baseline implements Comparator, Comparable {
             // If left < right
             if (comparator.compare(leftItem, rightItem) < 0) {
                 array[index] = left[leftIndex];
-                leftIndex += 1;
+                leftIndex++;
             } else {
                 array[index] = right[rightIndex];
-                rightIndex += 1;
+                rightIndex++;
             }
-            index += 1;
+            index++;
         }
-
 
         // merge the remaining elements(if there are any)
         while (leftIndex < left.length) {
             array[index] = left[leftIndex];
-            leftIndex += 1;
-            index += 1;
+            leftIndex++;
+            index++;
         }
 
         while (rightIndex < right.length) {
             array[index] = right[rightIndex];
-            rightIndex += 1;
-            index += 1;
+            rightIndex++;
+            index++;
         }
     }
 
     //bucketSort
-    public static void bucketSort(){
-
+    public static void bucketSort() {
+        // Implement your bucket sort logic here
     }
-
 
     @Override
     public int compareTo(Object o) {
