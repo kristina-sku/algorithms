@@ -5,7 +5,7 @@ public class Baseline implements Comparator, Comparable {
         int low = 0;
         int high = array.length - 1;
 
-        _quicksort(array, low, high, comparator);
+        _quicksort(array, low, high, comparator); //
     }
 
     private static <T extends Comparable<? super T>> void _quicksort(final T[] array, int low, int high, final Comparator<T> comparator) {
