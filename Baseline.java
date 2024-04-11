@@ -46,8 +46,51 @@ public class Baseline implements Comparator, Comparable {
 
     //2-way merge sort
 
-    public static void mergeSort(){
+    public static <T extends Comparable<? super T>> void mergesort(final T[] array,
+                                                                   final Comparator<T>) {
+        int length = array.length;
+        if (length < 2) {
+            return;
+        }
 
+        final T[] left = Arrays.copyOfRange(array, 0, array.length / 2);
+        final T[] right = Arrays.copyOfRange(array, array.length / 2, array.length);
+
+        mergeSort(left, comparator);
+        mergeSort(right, comparator);
+
+        int leftIndex = 0;
+        int rightIndex = 0;
+        int index = 0;
+
+        while (leftIndex < left.length && rightIndex < right.length) {
+            T leftItem = left[leftIndex];
+            T rightItem = right[rightIndex];
+
+            // If left < right
+            if (comparator.compare(leftItem, rightItem) < 0) {
+                array[index] = left[leftIndex];
+                leftIndex += 1;
+            } else {
+                array[index] = right[rightIndex];
+                rightIndex += 1;
+            }
+            index += 1;
+        }
+
+
+        // merge the remaining elements(if there are any)
+        while (leftIndex < left.length) {
+            array[index] = left[leftIndex];
+            leftIndex += 1;
+            index += 1;
+        }
+
+        while (rightIndex < right.length) {
+            array[index] = right[rightIndex];
+            rightIndex += 1;
+            index += 1;
+        }
     }
 
     //bucketSort
