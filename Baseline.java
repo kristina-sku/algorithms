@@ -1,5 +1,6 @@
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.List;
 
 public class Baseline implements Comparator<Object>, Comparable<Object> {
 
@@ -8,7 +9,7 @@ public class Baseline implements Comparator<Object>, Comparable<Object> {
         int low = 0;
         int high = array.length - 1;
 
-        _quicksort(array, low, high, comparator); //
+        _quicksort(array, low, high, comparator);
     }
 
     private static <T extends Comparable<? super T>> void _quicksort(final T[] array, int low, int high, final Comparator<T> comparator) {
@@ -88,9 +89,36 @@ public class Baseline implements Comparator<Object>, Comparable<Object> {
         }
     }
 
-    //bucketSort
-    public static void bucketSort() {
-        // Implement your bucket sort logic here
+    // Bucket sort
+    public static <T extends Comparable<? super T>> void bucketSort(T[] array, Comparator<T> comparator) {
+        int n = array.length;
+        List<T>[] buckets = new List[n];
+
+        // Initialize each bucket
+        for (int i = 0; i < n; i++) {
+            buckets[i] = new ArrayList<>();
+        }
+
+        // Distribute elements into buckets
+        for (T item : array) {
+            int bucketIndex = (int) (n * ((double) comparator.compare(item, null)));
+            buckets[bucketIndex].add(item);
+        }
+
+        // Sort each bucket
+        for (List<T> bucket : buckets) {
+            if (!bucket.isEmpty()) {
+                mergesort(bucket.toArray((T[]) new Object[bucket.size()]), comparator);
+            }
+        }
+
+        // Concatenate the buckets
+        int index = 0;
+        for (List<T> bucket : buckets) {
+            for (T item : bucket) {
+                array[index++] = item;
+            }
+        }
     }
 
     @Override
