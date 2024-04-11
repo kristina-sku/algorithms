@@ -1,6 +1,8 @@
 import java.util.Comparator;
 
 public class Baseline implements Comparator, Comparable {
+
+    //quicksort
     public static <T extends Comparable<? super T>> void quicksort(final T[] array, final Comparator<T> comparator) {
         int low = 0;
         int high = array.length - 1;
