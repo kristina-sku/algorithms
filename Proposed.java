@@ -9,8 +9,8 @@ public class Proposed {
 
     }
 
-    //merging subarrays from quick sort MQSA
-    public static void mqsa(){
+    //merging subarrays from quick sort MSQSA
+    public static void msqsa(){
 
     }
 }
