@@ -8,18 +8,21 @@ public class ProposedPQSA {
     private static final int SEQUENTIAL_THRESHOLD = 100;
 
     public static <T extends Comparable<? super T>> void parallelQuicksort(final T[] array, final Comparator<T> comparator) {
+        // Initialize pool instance to add process' too
         final ForkJoinPool pool = ForkJoinPool.commonPool();
-        pool.invoke(new RecursiveQuickSortTask<>(array, 0, array.length - 1, comparator));
+
+        // Submit ParallelQuickSortTask to the pool to compute
+        pool.invoke(new ParallelQuicksortTask<>(array, 0, array.length - 1, comparator));
     }
 
-    private static class RecursiveQuickSortTask<T extends Comparable<? super T>> extends RecursiveAction {
+    private static class ParallelQuicksortTask<T extends Comparable<? super T>> extends RecursiveAction {
 
         private final T[] array;
         private final int low;
         private final int high;
         private final Comparator<T> comparator;
 
-        public RecursiveQuickSortTask(T[] array, int low, int high, Comparator<T> comparator) {
+        public ParallelQuicksortTask(T[] array, int low, int high, Comparator<T> comparator) {
             this.array = array;
             this.low = low;
             this.high = high;
@@ -28,7 +31,7 @@ public class ProposedPQSA {
 
         @Override
         protected void compute() {
-            // When size of partition is less than the threshold, sequentially quicksort it - more efficient
+            // Base Case - For small sub-arrays use sequential sorting for efficiency
             if (high - low <= SEQUENTIAL_THRESHOLD) {
                 Baseline._quicksort(array, low, high, comparator);
                 return;
@@ -36,21 +39,27 @@ public class ProposedPQSA {
 
             int pivotIndex = Baseline.partition(array, low, high, comparator);
 
-            RecursiveQuickSortTask<T> leftTask = new RecursiveQuickSortTask<>(array, low, pivotIndex - 1, comparator);
-            RecursiveQuickSortTask<T> rightTask = new RecursiveQuickSortTask<>(array, pivotIndex + 1, high, comparator);
+            // Creates subtasks for left & right partition
+            ParallelQuicksortTask<T> leftTask = new ParallelQuicksortTask<>(array, low, pivotIndex - 1, comparator);
+            ParallelQuicksortTask<T> rightTask = new ParallelQuicksortTask<>(array, pivotIndex + 1, high, comparator);
 
+            // Fork left task to another thread if possible
             leftTask.fork();
+
+            // Current thread computes right task
             rightTask.compute();
+
+            // Wait for left task to finish before continuing
             leftTask.join();
         }
     }
-
     public static void main(String[] args) {
-        Integer[] arr = new Integer[1000];
-        Util.randFillArray(arr,10000);
+        // Fill arr with 1000 random ints bound below 10000
+        Integer[] arr = new Integer[10000];
+        Util.randFillArray(arr,10000000);
         System.out.println("Before: " + Arrays.toString(arr));
 
         parallelQuicksort(arr, Comparator.naturalOrder());
-        System.out.println(Arrays.toString(arr));
+        System.out.println("Sorted: " + Arrays.toString( arr));
     }
 }
