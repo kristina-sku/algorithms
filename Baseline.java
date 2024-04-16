@@ -13,7 +13,7 @@ public class Baseline implements Comparator<Object>, Comparable<Object> {
         _quicksort(array, low, high, comparator);
     }
 
-    private static <T extends Comparable<? super T>> void _quicksort(final T[] array, int low, int high, final Comparator<T> comparator) {
+    static <T extends Comparable<? super T>> void _quicksort(final T[] array, int low, int high, final Comparator<T> comparator) {
         if (low < high) {
             int pivotIndex = partition(array, low, high, comparator);
             _quicksort(array, low, pivotIndex - 1, comparator);
@@ -21,7 +21,7 @@ public class Baseline implements Comparator<Object>, Comparable<Object> {
         }
     }
 
-    private static <T extends Comparable<? super T>> int partition(final T[] array, int low, int high, final Comparator<T> comparator) {
+    public static <T extends Comparable<? super T>> int partition(final T[] array, int low, int high, final Comparator<T> comparator) {
         // select the pivot element
         T pivot = array[high];
 
