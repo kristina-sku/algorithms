@@ -9,10 +9,13 @@ public class Main {
     public static void main(String[] args) {
         // timing PQSA
 
-        System.out.println("Sequential threshold is set to 100");
-        testPQSA(100, 1000);
-        testPQSA(100, 10000);
-        testPQSA(100, 100000);
+//        System.out.println("Sequential threshold is set to 100");
+//        testPQSA(100, 1000);
+//        testPQSA(100, 10000);
+//        testPQSA(100, 100000);
+
+        ProposedMSQSA.runSortingAlgorithm(4, 100);
+
 
 
     }
