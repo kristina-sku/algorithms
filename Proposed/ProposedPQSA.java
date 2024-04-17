@@ -57,13 +57,8 @@ public class ProposedPQSA {
             leftTask.join();
         }
     }
-    public static void main(String[] args) {
-        // Fill arr with 1000 random ints bound below 10000
-        Integer[] arr = new Integer[10000];
-        Util.randFillArray(arr,1000);
-        System.out.println("Before: " + Arrays.toString(arr));
 
-        parallelQuicksort(arr, Comparator.naturalOrder());
-        System.out.println("Sorted: " + Arrays.toString( arr));
-    }
+
 }
+
+
