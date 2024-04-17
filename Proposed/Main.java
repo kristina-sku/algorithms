@@ -26,6 +26,7 @@ public class Main {
             Integer[] arr = new Integer[j]; // array of j integers
             Util.randFillArray(arr,1000);
 
+
             long startTime = System.nanoTime();
             ProposedPQSA.parallelQuicksort(arr, Comparator.naturalOrder());
             long endTime = System.nanoTime();
