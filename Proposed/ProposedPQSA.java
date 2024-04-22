@@ -57,8 +57,6 @@ public class ProposedPQSA {
             leftTask.join();
         }
     }
-
-
 }
 
 

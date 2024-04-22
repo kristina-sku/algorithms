@@ -48,47 +48,48 @@ public class Baseline implements Comparator<Object>, Comparable<Object> {
 
     // 2-way merge sort
     public static <T extends Comparable<? super T>> void mergesort(final T[] array, final Comparator<T> comparator) {
-        int length = array.length;
-        if (length < 2) {
-            return;
+        _mergesort(array,0, array.length -1, comparator);
+    }
+
+
+        public static <T extends Comparable<? super T>> void _mergesort(final T[] array, int low, int high, final Comparator<T> comparator) {
+        if (low < high) {
+            int mid = low + (high - low) / 2;
+
+            _mergesort(array, low, mid, comparator);
+            _mergesort(array, mid + 1, high, comparator);
+
+            merge(array, low, mid, high, comparator);
         }
+    }
 
-        final T[] left = Arrays.copyOfRange(array, 0, array.length / 2);
-        final T[] right = Arrays.copyOfRange(array, array.length / 2, array.length);
+    public static <T extends Comparable<? super T>> void merge(final T[] array, int low, int mid, int high, final Comparator<T> comparator) {
+        int leftSize = mid - low + 1;
+        int rightSize = high - mid;
 
-        mergesort(left, comparator);
-        mergesort(right, comparator);
+        // Create temporary arrays for left and right halves
+        T[] leftArray = Arrays.copyOfRange(array, low, mid + 1);
+        T[] rightArray = Arrays.copyOfRange(array, mid + 1, high + 1);
 
-        int leftIndex = 0;
-        int rightIndex = 0;
-        int index = 0;
+        int leftIndex = 0, rightIndex = 0, mergeIndex = low;
 
-        while (leftIndex < left.length && rightIndex < right.length) {
-            T leftItem = left[leftIndex];
-            T rightItem = right[rightIndex];
-
-            // If left < right
-            if (comparator.compare(leftItem, rightItem) < 0) {
-                array[index] = left[leftIndex];
-                leftIndex++;
+        // Merge left and right arrays back into the main array
+        while (leftIndex < leftSize && rightIndex < rightSize) {
+            if (comparator.compare(leftArray[leftIndex], rightArray[rightIndex]) <= 0) {
+                array[mergeIndex++] = leftArray[leftIndex++];
             } else {
-                array[index] = right[rightIndex];
-                rightIndex++;
+                array[mergeIndex++] = rightArray[rightIndex++];
             }
-            index++;
         }
 
-        // merge the remaining elements(if there are any)
-        while (leftIndex < left.length) {
-            array[index] = left[leftIndex];
-            leftIndex++;
-            index++;
+        // Copy remaining elements from left array, if any
+        while (leftIndex < leftSize) {
+            array[mergeIndex++] = leftArray[leftIndex++];
         }
 
-        while (rightIndex < right.length) {
-            array[index] = right[rightIndex];
-            rightIndex++;
-            index++;
+        // Copy remaining elements from right array, if any
+        while (rightIndex < rightSize) {
+            array[mergeIndex++] = rightArray[rightIndex++];
         }
     }
 
