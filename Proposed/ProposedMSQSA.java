@@ -1,6 +1,7 @@
 package Proposed;
 
 import Util.Baseline;
+import Util.Util;
 
 import java.util.Arrays;
 import java.util.Comparator;
@@ -11,42 +12,79 @@ public class ProposedMSQSA {
 
     private static final int SEQUENTIAL_THRESHOLD = 100;
 
-    public static<T extends Comparable<? super T>> void parallelMergeSort(final T[] array, final Comparator<T> comparator) {
-        final ForkJoinPool pool = ForkJoinPool.commonPool();
-        pool.invoke(new ParallelMergeSortTask<>(array, 0, array.length - 1, comparator));
+    public static <T extends Comparable<? super T>> void MSQSASort(T[] array, Comparator<T> comparator) {
+        ForkJoinPool pool = ForkJoinPool.commonPool();
+        int num_threads = Math.min(pool.getParallelism(), array.length); // Adjust num_threads if less than array size
+        pool.invoke(new ParallelMSQSATask<>(array, 0, array.length - 1, num_threads, comparator));
     }
 
-    private static class ParallelMergeSortTask<T extends Comparable<? super T>> extends RecursiveAction {
+    private static class ParallelMSQSATask<T extends Comparable<? super T>> extends RecursiveAction {
+
         private final T[] array;
-        private final int low;
-        private final int high;
+        private final int leftStart;
+        private final int rightEnd;
+        private final int num_threads;
         private final Comparator<T> comparator;
 
-        public ParallelMergeSortTask(T[] array, int low, int high, Comparator<T> comparator) {
+        public ParallelMSQSATask(T[] array, int leftStart, int rightEnd, int num_threads, Comparator<T> comparator) {
             this.array = array;
-            this.low = low;
-            this.high = high;
+            this.leftStart = leftStart;
+            this.rightEnd = rightEnd;
+            this.num_threads = num_threads;
             this.comparator = comparator;
         }
 
         @Override
         protected void compute() {
-            if (low < high) {
-                if (high - low <= SEQUENTIAL_THRESHOLD) {
-                    Baseline._mergesort(array, low, high, comparator);
-                    return;
+            if (rightEnd - leftStart <= SEQUENTIAL_THRESHOLD) {
+                Baseline._quicksort(array, leftStart, rightEnd, comparator);
+                return;
+            }
+
+            int mid = leftStart + (rightEnd - leftStart) / 2;
+
+            // Create subtasks for left and right halves
+            ParallelMSQSATask<T> leftTask = new ParallelMSQSATask<>(array, leftStart, mid, num_threads, comparator);
+            ParallelMSQSATask<T> rightTask = new ParallelMSQSATask<>(array, mid + 1, rightEnd, num_threads, comparator);
+
+            // Fork left and right tasks
+            leftTask.fork();
+            rightTask.fork();
+
+            // Wait for subtasks to finish
+            leftTask.join();
+            rightTask.join();
+
+            mergeSubarrays(array, leftStart,rightEnd, comparator);
+        }
+
+
+        private void mergeSubarrays(T[] arr, int low, int high, Comparator<T> comparator) {
+            int mid = (low + high) / 2;
+            int rightStart = mid + 1;
+
+            T[] temp = Arrays.copyOfRange(arr, low, high + 1);
+
+            int i = low; // Index for the left subarray
+            int j = rightStart; // Index for the right subarray
+            int k = low; // Index for the merged array
+
+            while (i <= mid && j <= high) {
+                if (comparator.compare(temp[i - low], temp[j - low]) <= 0) {
+                    arr[k++] = temp[i++ - low]; // Copy element from left subarray
+                } else {
+                    arr[k++] = temp[j++ - low]; // Copy element from right subarray
                 }
+            }
 
-                int mid = low + (high - low) / 2;
+            // Copy any remaining elements from left subarray
+            while (i <= mid) {
+                arr[k++] = temp[i++ - low];
+            }
 
-                ParallelMergeSortTask<T> leftTask = new ParallelMergeSortTask<>(array, low, mid, comparator);
-                ParallelMergeSortTask<T> rightTask = new ParallelMergeSortTask<>(array, mid + 1, high, comparator);
-
-                leftTask.fork();
-                rightTask.compute();
-                leftTask.join();
-
-                Baseline.merge(array, low, mid, high, comparator);
+            // Copy any remaining elements from right subarray
+            while (j <= high) {
+                arr[k++] = temp[j++ - low];
             }
         }
     }

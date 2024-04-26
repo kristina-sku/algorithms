@@ -17,6 +17,7 @@ public class ProposedPQSA {
 
         // Submit ParallelQuickSortTask to the pool to compute
         pool.invoke(new ParallelQuicksortTask<>(array, 0, array.length - 1, comparator));
+
     }
 
     private static class ParallelQuicksortTask<T extends Comparable<? super T>> extends RecursiveAction {

@@ -9,7 +9,7 @@ import java.util.Comparator;
 import java.util.List;
 
 public class MergeSortComparison {
-    private static final int MAX_VAL = 1_000_000;
+    private static final int MAX_VAL = 1_000;
 
     private static List<Long> mergeSortTimes;
     private static List<Long> parallelMergeSortTimes;
@@ -19,7 +19,7 @@ public class MergeSortComparison {
         this.arraySize = arraySize;
         mergeSortTimes = new ArrayList<>();
         parallelMergeSortTimes = new ArrayList<>();
-        System.out.println("Running Mergesort Methods....");
+        System.out.println("Running MSQSA Methods....");
         runMethods(iterations);
         evaluateComparison();
     }
@@ -49,7 +49,7 @@ public class MergeSortComparison {
             );
 
             long parallelmergeSortTime = getMethodExecutionTime(
-                    () -> ProposedMSQSA.parallelMergeSort(parallelmergeSortArray, Comparator.naturalOrder())
+                    () -> ProposedMSQSA.MSQSASort(parallelmergeSortArray, Comparator.naturalOrder())
             );
 
             mergeSortTimes.add(mergeSortTime);
